@@ -1,0 +1,121 @@
+{
+    "rc": {
+        "noEncounterBody": "Na rizikové setkání vás upozorníme pomocí oznámení.",
+        "noEncounterHeader": "V posledních 14 dnech nebyla ve vaší blízkosti žádná osoba s potvrzeným onemocněním COVID-19",
+        "riskyEncountersTitleAn": "Dne %1$s jste se setkali s osobou, u které bylo potvrzeno onemocnění COVID-19. V případě, že vás bude kontaktovat pracovník hygienické stanice, postupujte podle jeho pokynů.",
+        "riskyEncountersTitle": "Dne %@ jste se setkali s osobou, u které bylo potvrzeno onemocnění COVID-19.",
+        "recentExposuresUITitle": "Předchozí riziková setkání",
+        "spreadPreventionUITitle": "Zásady zodpovědného chování",
+        "symptomsUITitle": "Hlavní příznaky",
+        "exposureUITitle": "Rizikové setkání",
+        "encounterWarning": "Setkali jste se s osobou, u které bylo prokázáno onemocnění COVID-19. Sledujte svůj zdravotní stav.",
+        "riskyEncountersWithoutSymptoms": "Jestliže se u vás neprojevují hlavní příznaky onemocnění COVID-19, nemusíte zůstávat doma. Dodržujte zásady zodpovědného chování a sledujte svůj zdravotní stav.",
+        "riskyEncountersWithSymptoms": "Pokud se u vás v průběhu 14 dnů od kontaktu s nakaženým objevily příznaky respiračního onemocnění, kontaktujte telefonicky svého praktického lékaře a řiďte se jeho pokyny. Mimo jeho pracovní dobu kontaktujte telefonicky nejbližší lékařskou pohotovost. V případě závažných zdravotních obtíží volejte 155.",
+        "contactsContentJson": [
+            {
+                "title": "Máte podezření na onemocnění COVID-19?",
+                "text": "Zůstaňte doma a telefonicky kontaktuje svého praktického lékaře. Mimo jeho pracovní dobu kontaktujte telefonicky nejbližší lékařskou pohotovost.",
+                "linkTitle": "Důležité kontakty",
+                "link": "https://koronavirus.mzcr.cz/dulezite-kontakty-odkazy/"
+            },
+            {
+                "title": "Potřebujete poradit?",
+                "text": "Veškeré otázky a nejasnosti týkající se onemocnění COVID-19 najdete na webu MZČR.",
+                "linkTitle": "Často kladené otázky",
+                "link": "https://koronavirus.mzcr.cz/otazky-a-odpovedi/"
+            },
+            {
+                "title": "Podpora aplikace",
+                "text": "Potřebujete poradit s aplikací? Napište nám e-mail.",
+                "linkTitle": "Napsat e-mail",
+                "link": "mailto:info@erouska.cz"
+            },
+            {
+                "title": "O aplikaci eRouška",
+                "text": "Zajímá vás, jak aplikace funguje? Podívejte se na web erouska.cz.",
+                "linkTitle": "Přejít na web erouska.cz",
+                "link": "https://erouska.cz"
+            }
+        ],
+        "preventionContentJson": {
+            "title": "COVID-19 se přenáší hlavně kapénkami, která se šíří vzduchem. Přenášet se může také kontaminovanými předměty.",
+            "items": [
+                {
+                    "iconUrl": "https://erouska.cz/img/prevention/ic_clean_hands.png",
+                    "label": "Často a důkladně si myjte ruce mýdlem a používejte dezinfekci."
+                },
+                {
+                    "iconUrl": "https://erouska.cz/img/prevention/ic_disinfenction.png",
+                    "label": "Pravidelně dezinfikujte také osobní předměty (např. mobilní telefon)."
+                },
+                {
+                    "iconUrl": "https://erouska.cz/img/prevention/ic_tissue.png",
+                    "label": "Kašlejte a kýchejte do jednorázového kapesníku či rukávu."
+                },
+                {
+                    "iconUrl": "https://erouska.cz/img/prevention/ic_social_distance.png",
+                    "label": "Vyhýbejte se velkým skupinám osob a udržujte bezpečný odstup (cca 2 metry)."
+                },
+                {
+                    "iconUrl": "https://erouska.cz/img/prevention/ic_mask.png",
+                    "label": "Do obchodů a hromadných dopravních prostředků vždy noste roušku přes ústa a nos."
+                },
+                {
+                    "iconUrl": "https://erouska.cz/img/prevention/ic_stay_home.png",
+                    "label": "Pokud cítíte příznaky respiračního onemocnění, zůstaňte doma a kontaktujte lékaře."
+                }
+            ]
+        },
+        "symptomsContentJson": {
+            "title": "Příznaky se mohou objevit 2–14 dní po rizikovém setkání.",
+            "items": [
+                {
+                    "iconUrl": "https://erouska.cz/img/symptoms/ic_temperature.png",
+                    "label": "Zvýšená teplota"
+                },
+                {
+                    "iconUrl": "https://erouska.cz/img/symptoms/ic_cough.png",
+                    "label": "Kašel"
+                },
+                {
+                    "iconUrl": "https://erouska.cz/img/symptoms/ic_stuffiness.png",
+                    "label": "Dušnost"
+                },
+                {
+                    "iconUrl": "https://erouska.cz/img/symptoms/ic_throatache.png",
+                    "label": "Bolest v krku"
+                },
+                {
+                    "iconUrl": "https://erouska.cz/img/symptoms/ic_headache.png",
+                    "label": "Bolest hlavy, svalů a kloubů"
+                },
+                {
+                    "iconUrl": "https://erouska.cz/img/symptoms/ic_smelltaste.png",
+                    "label": "Ztráta čichu a chuti"
+                }
+            ]
+        },
+        "recentExposureNotificationTitle": "Vaše eRouška si dlouhou dobu neaktualizovala data, zda jste se setkali s nakaženým uživatelem eRoušky. Připojte se k internetu.",
+        "efgsCountries": "Aktuálně s eRouškou spolupracuje Dánsko, Lotyšsko, Německo a Rakousko.",
+        "exposureHelpContentJson": {
+            "items": [
+                {
+                    "iconUrl": "https://erouska.cz/img/exposure/ic_notification.png",
+                    "label": "Upozornění se vám zobrazí nejdříve 24 hodin poté, co se nakažený dozví pozitivní výsledek testu na COVID-19 a zadá ověřovací kód do eRoušky."
+                },
+                {
+                    "iconUrl": "https://erouska.cz/img/exposure/ic_privacy.png",
+                    "label": "Kvůli zachování anonymity neznáme čas ani místo setkání."
+                },
+                {
+                    "iconUrl": "https://erouska.cz/img/exposure/ic_distance.png",
+                    "label": "Rizikový kontakt vyhodnotíme v případě, že jste s nakaženým byli v kontaktu na vzdálenost kratší než 2 metry po dobu alespoň 15 minut."
+                },
+                {
+                    "iconUrl": "https://erouska.cz/img/exposure/ic_14days.png",
+                    "label": "Riziková setkání vyhodnocujeme za posledních 14 dní, protože příznaky onemocnění COVID-19 se u vás mohou projevit až 2–14 dní po setkání s nakaženým."
+                }
+            ]
+        }
+    }
+}
