@@ -1,8 +1,5 @@
 name: Upload strings to OneSky
-on:
-  push:
-    branches:
-      - develop
+on: [push]
 
 jobs:
   build:
