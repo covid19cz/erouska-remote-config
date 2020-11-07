@@ -17,6 +17,8 @@ const getServiceAccount = () => require(path.resolve(CREDENTIALS_FILE));
 
 // important constants
 const TRANSLATION_SOURCE_FILE = 'rc.json';
+const WRAPPING_KEY = 'rc';
+const RC_PREFIX = 'v2_';
 const DEFAULT_LANGUAGE = 'cs';
 const DEFAULT_FALLBACK = 'en';
 const TRANSLATED_LANGUAGES = ['en', 'sk'];
@@ -174,11 +176,6 @@ function processByRegex(data) {
             data = data.replace(/(?<=\s)(a|an|the)\s/gi, '$1\u00A0');
         }
 
-        // localize erouska.cz links
-        if (TRANSLATED_LANGS_WEB.includes(currentVueKey)) {
-            data = data.replace(/(https:\/\/erouska.cz\/)(\w\w\/)?/gi, '$1' + currentVueKey + '/');
-        }
-
         return data;
     }
     else if (typeof data === 'object' && data !== null) {
@@ -210,10 +207,10 @@ function stringsToRemoteConfigFormat(translation) {
     var values = {};
 
     for (const language of Object.keys(translation)) {
-        translation[language] = translation[language]['rc'];
+        translation[language] = translation[language][WRAPPING_KEY];
 
         for (const key of Object.keys(translation[language])) {
-            const rcKey = 'v2_' + key;
+            const rcKey = RC_PREFIX + key;
             const string = translation[language][key];
             const value = typeof string === 'object' ? JSON.stringify(string) : string;
 
