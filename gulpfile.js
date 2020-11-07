@@ -5,8 +5,8 @@ const path = require('path');
 const fetch = require('node-fetch');
 const admin = require('firebase-admin');
 const onesky = require('@brainly/onesky-utils');
-const dot = require('dot-object');
 const { series } = require('gulp');
+const { fallback } = require('google-gax/build/src/fallback');
 
 // OneSky auth
 const SKYAPP_PROJECT_ID = '359388';
@@ -20,6 +20,24 @@ const getServiceAccount = () => require(path.resolve(CREDENTIALS_FILE));
 // important constants
 const TRANSLATION_SOURCE_FILE = 'rc.json';
 const DEFAULT_LANGUAGE = 'cs';
+const DEFAULT_FALLBACK = 'en';
+const TRANSLATED_LANGUAGES = ['en', 'sk'];
+const TRANSLATED_LANGS_WEB = ['en', 'sk'];
+const FALLBACK_LANGUAGE = {
+    'en': DEFAULT_LANGUAGE,
+    'sk': DEFAULT_LANGUAGE
+};
+const LANGUAGE_TO_SKYAPP = {
+    'en': 'en-GB'
+};
+const DEFAULT_RC_LANGUAGE_VALUE = 'DEFAULT';
+const LANGUAGE_TO_RC = {
+    'cs': 'Cz value',
+    'sk': 'Sk value',
+    'en': DEFAULT_RC_LANGUAGE_VALUE
+};
+
+var currentVueKey = '';
 
 async function uploadStrings(keepStrings = true) {
     console.log(`Sending ${TRANSLATION_SOURCE_FILE} for translation`);
@@ -45,5 +63,285 @@ async function forceUploadStrings() {
     await uploadStrings(false);
 }
 
+async function downloadStrings() {
+    console.log(`Fetching translation of ${TRANSLATION_SOURCE_FILE}`);
+    const options = {
+        secret: SKYAPP_SECRET_KEY,
+        apiKey: SKYAPP_PUBLIC_KEY,
+        projectId: SKYAPP_PROJECT_ID,
+        fileName: TRANSLATION_SOURCE_FILE,
+        format: 'I18NEXT_MULTILINGUAL_JSON'
+    };
+
+    try {
+        return await onesky.getMultilingualFile(options);
+    } catch (e) {
+        console.error(`Failed to download translation: ${JSON.stringify(e)}`);
+        return '';
+    }
+}
+
+async function processAndUploadDownloadedStrings() {
+    const translationFile = await downloadStrings();
+
+    if (translationFile === '') {
+        return;
+    }
+
+    const content = JSON.parse(translationFile);
+    var translation = {};
+    const allLanguages = [...TRANSLATED_LANGUAGES, DEFAULT_LANGUAGE]
+
+    for (const language of allLanguages) {
+        const key = LANGUAGE_TO_SKYAPP[language] || language;
+        let data = {};
+
+        if (content.hasOwnProperty(key)) {
+            data = content[key]['translation'];
+        } else {
+            console.warn(`Language ${language} not found in OneSky`);
+        }
+
+        translation[language] = data;
+    }
+
+    const processedTranslation = buildI18n(translation);
+    await updateRemoteConfig(processedTranslation);
+}
+
+function buildI18n(content) {
+    var resultingTranslation = {};
+
+    for (const key of Object.keys(content)) {
+        let currentTranslation = content[key];
+        normalizeTranslations(content, key);
+        currentVueKey = key;
+        currentTranslation = processByRegex(currentTranslation);
+        resultingTranslation[key] = currentTranslation;
+    }
+
+    return resultingTranslation;
+}
+
+function normalizeTranslations(translations, language) {
+    const fallback = getFallback(language);
+    const data = translations[language];
+
+    if (language !== DEFAULT_LANGUAGE) {
+        for (const key of Object.keys(translations[DEFAULT_LANGUAGE])) {
+            if (!data.hasOwnProperty(key)) {
+                data[key] = translate(translations, fallback, key);
+            }
+        }
+    }
+}
+
+function getFallback(language) {
+    if (FALLBACK_LANGUAGE.hasOwnProperty(language)) {
+        return FALLBACK_LANGUAGE[language];
+    }
+
+    return DEFAULT_FALLBACK;
+}
+
+function translate(translation, language, key) {
+    const strings = translation[language] || {};
+    let result;
+
+    if (strings.hasOwnProperty(key)) {
+        result = strings[key];
+    }
+
+    if (result === undefined) {
+        if (language === DEFAULT_LANGUAGE) {
+            throw Error(`${key} not found for default language`);
+        }
+
+        const fallback = getFallback(language);
+        console.warn(`${key} not found for ${language}, using ${fallback}`);
+        return translate(translation, fallback, key);
+    }
+    return result;
+}
+
+function processByRegex(data) {
+    if (Array.isArray(data)) {
+        return data.map(processByRegex);
+    }
+    else if (typeof data === 'string') {
+        // non-breaking space (nbsp)
+        if (currentVueKey === 'cs' || currentVueKey === 'sk') {
+            data = data.replace(/(?<=\s)([kvszaiou])\s/gi, '$1\u00A0');
+        } else if (currentVueKey === 'en') {
+            data = data.replace(/(?<=\s)(a|an|the)\s/gi, '$1\u00A0');
+        }
+
+        // localize erouska.cz links
+        if (TRANSLATED_LANGS_WEB.includes(currentVueKey)) {
+            data = data.replace(/(https:\/\/erouska.cz\/)(\w\w\/)?/gi, '$1' + currentVueKey + '/');
+        }
+
+        return data;
+    }
+    else if (typeof data === 'object' && data !== null) {
+        const modified = {};
+
+        for (const key of Object.keys(data)) {
+            modified[key] = processByRegex(data[key]);
+        }
+
+        return modified;
+    }
+    throw Error(`Wrong type supplied to processByRegex: ${typeof data}, ${data}`);
+}
+
+async function updateRemoteConfig(translation) {
+    if (CREDENTIALS_FILE === undefined) {
+        console.log('GOOGLE_APPLICATION_CREDENTIALS not set, skipping remote config upload');
+        return;
+    }
+
+    const values = {
+        ...stringsToRemoteConfigFormat(translation)
+    };
+
+    await updateRemoteConfigValues(values);
+}
+
+function stringsToRemoteConfigFormat(translation) {
+    var values = {};
+
+    for (const language of Object.keys(translation)) {
+        translation[language] = translation[language]['rc'];
+
+        for (const key of Object.keys(translation[language])) {
+            const rcKey = 'v2_' + key;
+            const string = translation[language][key];
+            const value = typeof string === 'object' ? JSON.stringify(string) : string;
+
+            if (values[rcKey] === undefined) {
+                values[rcKey] = {
+                    defaultValue: {},
+                    conditionalValues: {}
+                }
+            }
+
+            if (LANGUAGE_TO_RC[language] === DEFAULT_RC_LANGUAGE_VALUE) {
+                values[rcKey].defaultValue = { value };
+            } else if (LANGUAGE_TO_RC[language]) {
+                values[rcKey].conditionalValues[LANGUAGE_TO_RC[language]] = { value };
+            }
+        }
+    }
+
+    return values;
+}
+
+async function updateRemoteConfigValues(values) {
+    try {
+        const account = getServiceAccount();
+        const firebaseProject = account.project_id;
+        console.log(`Updating remote config of ${firebaseProject}`);
+        const credential = admin.credential.cert(account);
+        const token = (await credential.getAccessToken()).access_token;
+        const config = await fetch(`https://firebaseremoteconfig.googleapis.com/v1/projects/${firebaseProject}/remoteConfig`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept-Encoding': 'gzip',
+            }
+        });
+
+        if (config.status !== 200) {
+            console.log(`FAQ remote config fetch failed: ${config.status}: ${config.statusText}`);
+            return;
+        }
+
+        const etag = config.headers.raw().etag[0];
+        const body = await config.json();
+        const parameters = body['parameters'] || {};
+        const conditions = body['conditions'] || [];
+
+        if (!isRemoteConfigDirty(body['parameters'], values)) {
+            console.log('Values not changed, skipping');
+            return;
+        }
+
+        for (const key of Object.keys(values)) {
+            const value = values[key];
+
+            if (value === '') {
+                console.warn(`Skipping remote config key ${key} because it's empty`);
+                continue;
+            }
+
+            let object;
+
+            if (value.hasOwnProperty('defaultValue')) {
+                object = value;
+                if (parameters[key] !== undefined) {
+                    object = parameters[key];
+                }
+                object = value;
+            } else {
+                object = {
+                    defaultValue: {
+                        value
+                    }
+                };
+                if (parameters[key] !== undefined) {
+                    object = parameters[key];
+                }
+                object.defaultValue.value = value;
+            }
+
+            parameters[key] = object;
+        }
+
+        const data = {
+            parameters,
+            conditions
+        };
+        const dataJson = JSON.stringify(data);
+        const result = await fetch(`https://firebaseremoteconfig.googleapis.com/v1/projects/${firebaseProject}/remoteConfig`, {
+            method: 'PUT',
+            headers: {
+                'Content-Length': dataJson.length,
+                'Content-Type': 'application/json; UTF8',
+                'Authorization': `Bearer ${token}`,
+                'Accept-Encoding': 'gzip',
+                'If-Match': etag
+            },
+            body: dataJson
+        });
+        const status = result.status;
+
+        if (status === 200) {
+            console.log('FAQ remote config uploaded');
+        } else {
+            console.error(`FAQ remote config upload failed: ${status}: ${result.statusText} ${JSON.stringify(result)}`);
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+function isRemoteConfigDirty(data, values) {
+    if (data === undefined) {
+        return true;
+    }
+
+    for (const key of Object.keys(values)) {
+        if (data[key] === undefined || data[key]['defaultValue']['value'] !== values[key]) {
+            console.log(`Key ${key} is dirty`);
+            return true;
+        }
+    }
+
+    return false;
+}
+
 exports.up = uploadStrings;
 exports.uploadF = forceUploadStrings;
+
+exports.default = processAndUploadDownloadedStrings;
