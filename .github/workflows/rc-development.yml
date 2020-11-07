@@ -1,17 +1,17 @@
 name: Dev RC (sends OneSky strings to development Remote Config)
 on: [workflow_dispatch]
 jobs:
-    rcdev:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout repo
-                uses: actions/checkout@master
-            - name: Upload strings
-                run: |
-                    yarn install
-                    printenv GOOGLE_JSON > creds.json
-                    gulp
-                env:
-                    GOOGLE_JSON: ${{ secrets.FIREBASE_DEV_2_JSON }}
-                    GOOGLE_APPLICATION_CREDENTIALS: creds.json
-                    SKYAPP_SECRET_KEY: ${{ secrets.SKYAPP_SECRET_KEY }}
+  rcdev:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@master
+      - name: Upload strings
+        run: |
+          yarn install
+          printenv GOOGLE_JSON > creds.json
+          gulp
+        env:
+          GOOGLE_JSON: ${{ secrets.FIREBASE_DEV_2_JSON }}
+          GOOGLE_APPLICATION_CREDENTIALS: creds.json
+          SKYAPP_SECRET_KEY: ${{ secrets.SKYAPP_SECRET_KEY }}
