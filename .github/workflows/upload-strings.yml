@@ -11,6 +11,8 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@master
       - name: Upload strings
-        run: gulp up
+        run: |
+          yarn install
+          gulp up
         env:
           SKYAPP_SECRET_KEY: ${{ secrets.SKYAPP_SECRET_KEY }}
