@@ -5,8 +5,6 @@ const path = require('path');
 const fetch = require('node-fetch');
 const admin = require('firebase-admin');
 const onesky = require('@brainly/onesky-utils');
-const { series } = require('gulp');
-const { fallback } = require('google-gax/build/src/fallback');
 
 // OneSky auth
 const SKYAPP_PROJECT_ID = '359388';
@@ -253,7 +251,7 @@ async function updateRemoteConfigValues(values) {
         });
 
         if (config.status !== 200) {
-            console.log(`FAQ remote config fetch failed: ${config.status}: ${config.statusText}`);
+            console.log(`Remote config fetch failed: ${config.status}: ${config.statusText}`);
             return;
         }
 
@@ -317,9 +315,9 @@ async function updateRemoteConfigValues(values) {
         const status = result.status;
 
         if (status === 200) {
-            console.log('FAQ remote config uploaded');
+            console.log('Remote config uploaded');
         } else {
-            console.error(`FAQ remote config upload failed: ${status}: ${result.statusText} ${JSON.stringify(result)}`);
+            console.error(`Remote config upload failed: ${status}: ${result.statusText} ${JSON.stringify(result)}`);
         }
     } catch (e) {
         console.error(e);
