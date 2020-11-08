@@ -1,11 +1,14 @@
 name: OneSky (uploads strings to OneSky)
-on: [push]
+on:
+  push:
+    branches:
+    - main
 jobs:
   onesky:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@master
+        uses: actions/checkout@main
       - name: Upload strings
         run: |
           yarn install
