@@ -22,7 +22,6 @@ const RC_PREFIX = 'v2_';
 const DEFAULT_LANGUAGE = 'cs';
 const DEFAULT_FALLBACK = 'en';
 const TRANSLATED_LANGUAGES = ['en', 'sk'];
-const TRANSLATED_LANGS_WEB = ['en', 'sk'];
 const FALLBACK_LANGUAGE = {
     'en': DEFAULT_LANGUAGE,
     'sk': DEFAULT_LANGUAGE
@@ -314,7 +313,7 @@ async function updateRemoteConfigValues(values) {
         if (status === 200) {
             console.log('Remote config uploaded');
         } else {
-            console.error(`Remote config upload failed: ${status}: ${result.statusText} ${JSON.stringify(result)}`);
+            console.error(`Remote config upload failed: ${status}: ${result.statusText}`);
         }
     } catch (e) {
         console.error(e);
