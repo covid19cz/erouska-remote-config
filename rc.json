@@ -10,11 +10,11 @@
         "exposureUITitle": "Rizikové setkání",
         "encounterWarning": "Setkali jste se s osobou, u které bylo prokázáno onemocnění COVID-19. Sledujte svůj zdravotní stav.",
         "riskyEncountersWithoutSymptoms": "Jestliže se u vás neprojevují hlavní příznaky onemocnění COVID-19, nemusíte zůstávat doma. Dodržujte zásady zodpovědného chování a sledujte svůj zdravotní stav.",
-        "riskyEncountersWithSymptoms": "Pokud se u vás v průběhu 14 dnů od kontaktu s nakaženým objevily příznaky respiračního onemocnění, kontaktujte telefonicky svého praktického lékaře a řiďte se jeho pokyny. Mimo jeho pracovní dobu kontaktujte telefonicky nejbližší lékařskou pohotovost. V případě závažných zdravotních obtíží volejte 155.",
+        "riskyEncountersWithSymptoms": "Pokud se u vás v průběhu 14 dnů od kontaktu s nakaženým objevily příznaky respiračního onemocnění, kontaktujte telefonicky svého praktického lékaře a řiďte se jeho pokyny. V případě závažných zdravotních obtíží volejte 155.",
         "contactsContentJson": [
             {
                 "title": "Máte podezření na onemocnění COVID-19?",
-                "text": "Zůstaňte doma a telefonicky kontaktuje svého praktického lékaře. Mimo jeho pracovní dobu kontaktujte telefonicky nejbližší lékařskou pohotovost.",
+                "text": "Zůstaňte doma a telefonicky kontaktuje svého praktického lékaře.",
                 "linkTitle": "Důležité kontakty",
                 "link": "https://koronavirus.mzcr.cz/dulezite-kontakty-odkazy/"
             },
