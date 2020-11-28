@@ -427,7 +427,9 @@ function getTemplateForKeyValue(key, value) {
 
 function getTemplateWrapper(value) {
     return `<?xml version="1.0" encoding="utf-8"?>
-<defaultsMap>${value}</defaultsMap>`;
+<defaultsMap>${value}
+</defaultsMap>
+`;
 }
 
 exports.up = uploadStrings;

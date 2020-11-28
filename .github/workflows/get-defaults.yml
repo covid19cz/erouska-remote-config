@@ -6,7 +6,7 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@master
-      - name: Upload strings
+      - name: Fetch RC
         run: |
           yarn install
           printenv GOOGLE_JSON > creds.json
@@ -17,5 +17,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: res
+          name: Remote Config defaults
           path: res
