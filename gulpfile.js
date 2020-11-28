@@ -35,6 +35,7 @@ const LANGUAGE_TO_RC = {
     'sk': 'Sk value',
     'en': DEFAULT_RC_LANGUAGE_VALUE
 };
+const GET_DEFAULTS_SUPPORTED = ['cs', 'sk'];
 
 var currentVueKey = '';
 
@@ -364,10 +365,8 @@ async function getRemoteConfigValues() {
             if (parameters.hasOwnProperty(key) && key.substr(0, 3) == 'v2_') {
                 const element = parameters[key];
 
-                if (element.hasOwnProperty('defaultValue')) {
-                    xmlContent[DEFAULT_RC_LANGUAGE_VALUE] = xmlContent[DEFAULT_RC_LANGUAGE_VALUE] ? xmlContent[DEFAULT_RC_LANGUAGE_VALUE] : '';
-                    xmlContent[DEFAULT_RC_LANGUAGE_VALUE] += getTemplateForKeyValue(key, element.defaultValue.value);
-                }
+                xmlContent[DEFAULT_RC_LANGUAGE_VALUE] = xmlContent[DEFAULT_RC_LANGUAGE_VALUE] ? xmlContent[DEFAULT_RC_LANGUAGE_VALUE] : '';
+                xmlContent[DEFAULT_RC_LANGUAGE_VALUE] += getTemplateForKeyValue(key, element.defaultValue.value);
 
                 if (element.hasOwnProperty('conditionalValues')) {
                     const condValues = element.conditionalValues;
@@ -379,6 +378,11 @@ async function getRemoteConfigValues() {
                             xmlContent[condKey] += getTemplateForKeyValue(key, value);
                         }
                     }
+                } else {
+                    GET_DEFAULTS_SUPPORTED.forEach(langCode => {
+                        xmlContent[LANGUAGE_TO_RC[langCode]] = xmlContent[LANGUAGE_TO_RC[langCode]] ? xmlContent[LANGUAGE_TO_RC[langCode]] : '';
+                        xmlContent[LANGUAGE_TO_RC[langCode]] += getTemplateForKeyValue(key, element.defaultValue.value);
+                    });
                 }
             }
         }
