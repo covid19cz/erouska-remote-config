@@ -335,7 +335,103 @@ function isRemoteConfigDirty(data, values) {
     return false;
 }
 
+async function getRemoteConfigValues() {
+    try {
+        const account = getServiceAccount();
+        const firebaseProject = account.project_id;
+        console.log(`Fetching remote config of ${firebaseProject}`);
+        const credential = admin.credential.cert(account);
+        const token = (await credential.getAccessToken()).access_token;
+        const config = await fetch(`https://firebaseremoteconfig.googleapis.com/v1/projects/${firebaseProject}/remoteConfig`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept-Encoding': 'gzip',
+            }
+        });
+
+        if (config.status !== 200) {
+            console.log(`Remote config fetch failed: ${config.status}: ${config.statusText}`);
+            return;
+        }
+
+        const body = await config.json();
+        const parameters = body['parameters'] || {};
+
+        const xmlContent = {};
+
+        for (const key in parameters) {
+            if (parameters.hasOwnProperty(key) && key.substr(0, 3) == 'v2_') {
+                const element = parameters[key];
+
+                if (element.hasOwnProperty('defaultValue')) {
+                    xmlContent[DEFAULT_RC_LANGUAGE_VALUE] = xmlContent[DEFAULT_RC_LANGUAGE_VALUE] ? xmlContent[DEFAULT_RC_LANGUAGE_VALUE] : '';
+                    xmlContent[DEFAULT_RC_LANGUAGE_VALUE] += getTemplateForKeyValue(key, element.defaultValue.value);
+                }
+
+                if (element.hasOwnProperty('conditionalValues')) {
+                    const condValues = element.conditionalValues;
+
+                    for (const condKey in condValues) {
+                        if (condValues.hasOwnProperty(condKey)) {
+                            const { value } = condValues[condKey];
+                            xmlContent[condKey] = xmlContent[condKey] ? xmlContent[condKey] : '';
+                            xmlContent[condKey] += getTemplateForKeyValue(key, value);
+                        }
+                    }
+                }
+            }
+        }
+
+        const directory = 'res';
+        const innerPrefix = 'xml';
+        const fileName = 'remote_config_defaults.xml';
+
+        if (!fs.existsSync(directory)) {
+            fs.mkdirSync(directory);
+        }
+
+        for (const lang in xmlContent) {
+            if (xmlContent.hasOwnProperty(lang)) {
+                const langContent = xmlContent[lang];
+                const dirName = `${directory}/${
+                    lang == DEFAULT_RC_LANGUAGE_VALUE
+                    ? innerPrefix
+                    : `${innerPrefix}-${getKeyByValue(LANGUAGE_TO_RC, lang)}`
+                }`;
+
+                if (!fs.existsSync(dirName)) {
+                    fs.mkdirSync(dirName);
+                }
+
+                fs.writeFileSync(`${dirName}/${fileName}`, getTemplateWrapper(langContent));
+            }
+        }
+
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+function getKeyByValue(obj, value) {
+    return Object.keys(obj).find(key => obj[key] === value);
+}
+
+function getTemplateForKeyValue(key, value) {
+    return `
+    <entry>
+        <key>${key}</key>
+        <value>${value}</value>
+    </entry>`;
+}
+
+function getTemplateWrapper(value) {
+    return `<?xml version="1.0" encoding="utf-8"?>
+<defaultsMap>${value}</defaultsMap>`;
+}
+
 exports.up = uploadStrings;
 exports.uploadF = forceUploadStrings;
+exports.get = getRemoteConfigValues;
 
 exports.default = processAndUploadDownloadedStrings;
