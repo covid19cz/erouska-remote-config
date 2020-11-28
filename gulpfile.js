@@ -403,7 +403,7 @@ async function getRemoteConfigValues() {
                     fs.mkdirSync(dirName);
                 }
 
-                fs.writeFileSync(`${dirName}/${fileName}`, getTemplateWrapper(langContent));
+                fs.writeFileSync(`${dirName}/${fileName}`, processXmlByRegex(getTemplateWrapper(langContent)));
             }
         }
 
@@ -422,6 +422,10 @@ function getTemplateForKeyValue(key, value) {
         <key>${key}</key>
         <value>${value}</value>
     </entry>`;
+}
+
+function processXmlByRegex(value) {
+    return value.replace(/&/g, '&amp;');
 }
 
 function getTemplateWrapper(value) {
