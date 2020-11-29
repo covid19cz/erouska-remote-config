@@ -117,6 +117,9 @@
                     "label": "Riziková setkání vyhodnocujeme za posledních 14 dní, protože příznaky onemocnění COVID-19 se u vás mohou projevit až 2–14 dní po setkání s nakaženým."
                 }
             ]
-        }
+        },
+        "v2_noEncounterCardTitle": "Za posledních 14 dní žádné rizikové setkání",
+        "v2_encounterUpdateFrequency": "Aktualizace probíhá jednou za %d hodin.",
+        "v2_selfCheckerPeriodHours": 4
     }
 }
