@@ -118,8 +118,7 @@
                 }
             ]
         },
-        "v2_noEncounterCardTitle": "Za posledních 14 dní žádné rizikové setkání",
-        "v2_encounterUpdateFrequency": "Aktualizace probíhá jednou za %d hodin.",
-        "v2_selfCheckerPeriodHours": 4
+        "noEncounterCardTitle": "Za posledních 14 dní žádné rizikové setkání",
+        "encounterUpdateFrequency": "Aktualizace probíhá jednou za %d hodin."
     }
 }
