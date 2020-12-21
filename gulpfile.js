@@ -33,7 +33,8 @@ const DEFAULT_RC_LANGUAGE_VALUE = 'DEFAULT';
 const LANGUAGE_TO_RC = {
     'cs': 'Cz value',
     'sk': 'Sk value',
-    'en': DEFAULT_RC_LANGUAGE_VALUE
+    'en': DEFAULT_RC_LANGUAGE_VALUE,
+    'Base': 'iOS base'
 };
 const GET_DEFAULTS_SUPPORTED = ['cs', 'sk'];
 
@@ -336,7 +337,7 @@ function isRemoteConfigDirty(data, values) {
     return false;
 }
 
-async function getRemoteConfigValues() {
+async function getRemoteConfigValues(isiOS) {
     try {
         const account = getServiceAccount();
         const firebaseProject = account.project_id;
@@ -362,11 +363,11 @@ async function getRemoteConfigValues() {
         const xmlContent = {};
 
         for (const key in parameters) {
-            if (parameters.hasOwnProperty(key) && key.substr(0, 3) == 'v2_') {
+            if (parameters.hasOwnProperty(key) && key.substr(0, 3) == RC_PREFIX) {
                 const element = parameters[key];
 
                 xmlContent[DEFAULT_RC_LANGUAGE_VALUE] = xmlContent[DEFAULT_RC_LANGUAGE_VALUE] ? xmlContent[DEFAULT_RC_LANGUAGE_VALUE] : '';
-                xmlContent[DEFAULT_RC_LANGUAGE_VALUE] += getTemplateForKeyValue(key, element.defaultValue.value);
+                xmlContent[DEFAULT_RC_LANGUAGE_VALUE] += getTemplateForKeyValue(key, element.defaultValue.value, isiOS);
 
                 GET_DEFAULTS_SUPPORTED.forEach(defKey => {
                     const condKey = LANGUAGE_TO_RC[defKey];
@@ -374,36 +375,55 @@ async function getRemoteConfigValues() {
 
                     if (element.hasOwnProperty('conditionalValues') && element.conditionalValues.hasOwnProperty(condKey)) {
                         const { value } = element.conditionalValues[condKey];
-                        xmlContent[condKey] += getTemplateForKeyValue(key, value);
+                        xmlContent[condKey] += getTemplateForKeyValue(key, value, isiOS);
                     } else {
-                        xmlContent[condKey] += getTemplateForKeyValue(key, element.defaultValue.value);
+                        xmlContent[condKey] += getTemplateForKeyValue(key, element.defaultValue.value, isiOS);
                     }
                 });
             }
         }
 
-        const directory = 'res';
-        const innerPrefix = 'xml';
-        const fileName = 'remote_config_defaults.xml';
+        const directory = isiOS ? 'resios' : 'res';
+        const innerText = isiOS ? '.lproj' : 'xml';
+        const fileName = isiOS ? 'RemoteConfig.strings' : 'remote_config_defaults.xml';
+        const fileName2 = 'Help.strings';
 
         if (!fs.existsSync(directory)) {
             fs.mkdirSync(directory);
         }
 
+        if (isiOS) {
+            xmlContent['iOS base'] = xmlContent[LANGUAGE_TO_RC['cs']];
+        }
+
         for (const lang in xmlContent) {
             if (xmlContent.hasOwnProperty(lang)) {
                 const langContent = xmlContent[lang];
+                // const dirName = `${directory}/${
+                //     lang == DEFAULT_RC_LANGUAGE_VALUE
+                //     ? (isiOS ? `Base${innerText}` : innerText)
+                //     : (isiOS ? `${getKeyByValue(LANGUAGE_TO_RC, lang)}${innerText}` : `${innerText}-${getKeyByValue(LANGUAGE_TO_RC, lang)}`)
+                // }`;
+
                 const dirName = `${directory}/${
-                    lang == DEFAULT_RC_LANGUAGE_VALUE
-                    ? innerPrefix
-                    : `${innerPrefix}-${getKeyByValue(LANGUAGE_TO_RC, lang)}`
+                    isiOS
+                    ? `${getKeyByValue(LANGUAGE_TO_RC, lang)}${innerText}`
+                    : (
+                        lang == DEFAULT_RC_LANGUAGE_VALUE
+                        ? innerText
+                        : `${innerText}-${getKeyByValue(LANGUAGE_TO_RC, lang)}`
+                    )
                 }`;
 
                 if (!fs.existsSync(dirName)) {
                     fs.mkdirSync(dirName);
                 }
 
-                fs.writeFileSync(`${dirName}/${fileName}`, processXmlByRegex(getTemplateWrapper(langContent)));
+                if (isiOS) {
+                    fs.writeFileSync(`${dirName}/${fileName2}`, processXmlByRegex(getTemplateWrapper(langContent, isiOS), isiOS, true));
+                }
+
+                fs.writeFileSync(`${dirName}/${fileName}`, processXmlByRegex(getTemplateWrapper(langContent, isiOS), isiOS, false));
             }
         }
 
@@ -412,24 +432,39 @@ async function getRemoteConfigValues() {
     }
 }
 
+async function getRemoteConfigValuesIos() {
+    return await getRemoteConfigValues(true);
+}
+
 function getKeyByValue(obj, value) {
     return Object.keys(obj).find(key => obj[key] === value);
 }
 
-function getTemplateForKeyValue(key, value) {
-    return `
+function getTemplateForKeyValue(key, value, isiOS) {
+    return isiOS
+    ? `"${key.replace(RC_PREFIX, '')}" = "${value.replace(/"/g, '\\"')}";
+`
+    : `
     <entry>
         <key>${key}</key>
         <value>${value}</value>
     </entry>`;
 }
 
-function processXmlByRegex(value) {
-    return value.replace(/&/g, '&amp;');
+function processXmlByRegex(value, isiOS, isHelp) {
+    return (
+        isiOS ? (
+            isHelp
+            ? value.replace(/"helpMarkdown".*\n/, '')
+            : value.replace(/(.*)"helpMarkdown".*\n/, '')
+        ) : value.replace(/&/g, '&amp;')
+    );
 }
 
-function getTemplateWrapper(value) {
-    return `<?xml version="1.0" encoding="utf-8"?>
+function getTemplateWrapper(value, isiOS) {
+    return isiOS
+    ? `${value}`
+    : `<?xml version="1.0" encoding="utf-8"?>
 <defaultsMap>${value}
 </defaultsMap>
 `;
@@ -438,5 +473,6 @@ function getTemplateWrapper(value) {
 exports.up = uploadStrings;
 exports.uploadF = forceUploadStrings;
 exports.get = getRemoteConfigValues;
+exports.getios = getRemoteConfigValuesIos;
 
 exports.default = processAndUploadDownloadedStrings;

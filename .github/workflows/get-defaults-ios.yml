@@ -1,0 +1,21 @@
+name: Get RC defaults
+on: [workflow_dispatch]
+jobs:
+  getrcdefios:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@master
+      - name: Fetch RC
+        run: |
+          yarn install
+          printenv GOOGLE_JSON > creds.json
+          gulp getios
+        env:
+          GOOGLE_JSON: ${{ secrets.FIREBASE_PROD_JSON }}
+          GOOGLE_APPLICATION_CREDENTIALS: creds.json
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: Remote Config defaults
+          path: resios
