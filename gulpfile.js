@@ -432,6 +432,10 @@ async function getRemoteConfigValues(isiOS) {
     }
 }
 
+async function getRemoteConfigValuesAndroid() {
+    return await getRemoteConfigValues(false);
+}
+
 async function getRemoteConfigValuesIos() {
     return await getRemoteConfigValues(true);
 }
@@ -442,7 +446,7 @@ function getKeyByValue(obj, value) {
 
 function getTemplateForKeyValue(key, value, isiOS) {
     return isiOS
-    ? `"${key.replace(RC_PREFIX, '')}" = "${value.replace(/"/g, '\\"')}";
+    ? `"${key.replace(RC_PREFIX, '')}" = "${value.replace(/(["\\])/g, '\\$1')}";
 `
     : `
     <entry>
@@ -455,8 +459,8 @@ function processXmlByRegex(value, isiOS, isHelp) {
     return (
         isiOS ? (
             isHelp
-            ? value.replace(/"helpMarkdown".*\n/, '')
-            : value.replace(/(.*)"helpMarkdown".*\n/, '')
+            ? value.match(/"helpMarkdown".*\n/)[0]
+            : value.replace(/"helpMarkdown".*\n/, '')
         ) : value.replace(/&/g, '&amp;')
     );
 }
@@ -472,7 +476,7 @@ function getTemplateWrapper(value, isiOS) {
 
 exports.up = uploadStrings;
 exports.uploadF = forceUploadStrings;
-exports.get = getRemoteConfigValues;
+exports.get = getRemoteConfigValuesAndroid;
 exports.getios = getRemoteConfigValuesIos;
 
 exports.default = processAndUploadDownloadedStrings;
