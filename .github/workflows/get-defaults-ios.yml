@@ -1,4 +1,4 @@
-name: Get RC defaults
+name: Get RC defaults iOS
 on: [workflow_dispatch]
 jobs:
   getrcdefios:

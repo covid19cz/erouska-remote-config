@@ -1,4 +1,4 @@
-name: Get RC defaults
+name: Get RC defaults Android
 on: [workflow_dispatch]
 jobs:
   getrcdef:
