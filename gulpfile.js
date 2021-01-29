@@ -12,7 +12,7 @@ const SKYAPP_PUBLIC_KEY = 'e0DfHgNmzrc67zt3RabZRWcYpkSISL1W';
 const SKYAPP_SECRET_KEY = process.env.SKYAPP_SECRET_KEY;
 
 // Firebase auth
-const CREDENTIALS_FILE = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+const CREDENTIALS_FILE = process.env.GOOGLE_APPLICATION_CREDENTIALS || 'creds.json';
 const getServiceAccount = () => require(path.resolve(CREDENTIALS_FILE));
 
 // important constants
@@ -363,7 +363,7 @@ async function getRemoteConfigValues(isiOS) {
         const xmlContent = {};
 
         for (const key in parameters) {
-            if (parameters.hasOwnProperty(key) && key.substr(0, 3) == RC_PREFIX) {
+            if (parameters.hasOwnProperty(key) && key.substr(0, 3) == RC_PREFIX && key != 'v2_verificationServerApiKey') {
                 const element = parameters[key];
 
                 xmlContent[DEFAULT_RC_LANGUAGE_VALUE] = xmlContent[DEFAULT_RC_LANGUAGE_VALUE] ? xmlContent[DEFAULT_RC_LANGUAGE_VALUE] : '';
@@ -385,8 +385,7 @@ async function getRemoteConfigValues(isiOS) {
 
         const directory = isiOS ? 'resios' : 'res';
         const innerText = isiOS ? '.lproj' : 'xml';
-        const fileName = isiOS ? 'RemoteConfig.strings' : 'remote_config_defaults.xml';
-        const fileName2 = 'Help.strings';
+        const fileName = [isiOS ? 'RemoteConfig.strings' : 'remote_config_defaults.xml', 'Help.strings', 'HelpJson.strings'];
 
         if (!fs.existsSync(directory)) {
             fs.mkdirSync(directory);
@@ -399,12 +398,6 @@ async function getRemoteConfigValues(isiOS) {
         for (const lang in xmlContent) {
             if (xmlContent.hasOwnProperty(lang)) {
                 const langContent = xmlContent[lang];
-                // const dirName = `${directory}/${
-                //     lang == DEFAULT_RC_LANGUAGE_VALUE
-                //     ? (isiOS ? `Base${innerText}` : innerText)
-                //     : (isiOS ? `${getKeyByValue(LANGUAGE_TO_RC, lang)}${innerText}` : `${innerText}-${getKeyByValue(LANGUAGE_TO_RC, lang)}`)
-                // }`;
-
                 const dirName = `${directory}/${
                     isiOS
                     ? `${getKeyByValue(LANGUAGE_TO_RC, lang)}${innerText}`
@@ -420,10 +413,11 @@ async function getRemoteConfigValues(isiOS) {
                 }
 
                 if (isiOS) {
-                    fs.writeFileSync(`${dirName}/${fileName2}`, processXmlByRegex(getTemplateWrapper(langContent, isiOS), isiOS, true));
+                    fs.writeFileSync(`${dirName}/${fileName[1]}`, processXmlByRegex(getTemplateWrapper(langContent, isiOS), isiOS, 1));
+                    fs.writeFileSync(`${dirName}/${fileName[2]}`, processXmlByRegex(getTemplateWrapper(langContent, isiOS), isiOS, 2));
                 }
 
-                fs.writeFileSync(`${dirName}/${fileName}`, processXmlByRegex(getTemplateWrapper(langContent, isiOS), isiOS, false));
+                fs.writeFileSync(`${dirName}/${fileName[0]}`, processXmlByRegex(getTemplateWrapper(langContent, isiOS), isiOS, 0));
             }
         }
 
@@ -455,12 +449,16 @@ function getTemplateForKeyValue(key, value, isiOS) {
     </entry>`;
 }
 
-function processXmlByRegex(value, isiOS, isHelp) {
+function processXmlByRegex(value, isiOS, helpMode) {
     return (
         isiOS ? (
-            isHelp
-            ? value.match(/"helpMarkdown".*\n/)[0]
-            : value.replace(/"helpMarkdown".*\n/, '')
+            helpMode == 0
+            ? value.replace(/"help((Markdown)|(Json))".*\n/g, '')
+            : (
+                helpMode == 1
+                ? value.match(/"helpMarkdown".*\n/)[0]
+                : value.match(/"helpJson".*\n/)[0]
+            )
         ) : value.replace(/&/g, '&amp;')
     );
 }
