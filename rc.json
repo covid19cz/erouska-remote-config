@@ -119,6 +119,7 @@
             ]
         },
         "noEncounterCardTitle": "Za posledních 14 dní žádné rizikové setkání",
-        "encounterUpdateFrequency": "Aktualizace probíhá jednou za %d hodin."
+        "encounterUpdateFrequency": "Aktualizace probíhá jednou za %d hodin.",
+        "howItWorksUITitle": "Jak eRouška funguje"
     }
 }
