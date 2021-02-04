@@ -363,7 +363,7 @@ async function getRemoteConfigValues(isiOS) {
         const xmlContent = {};
 
         for (const key in parameters) {
-            if (parameters.hasOwnProperty(key) && key.substr(0, 3) == RC_PREFIX && key != 'v2_verificationServerApiKey') {
+            if (parameters.hasOwnProperty(key) && key.substr(0, 3) == RC_PREFIX && (!isiOS || key != 'v2_verificationServerApiKey')) {
                 const element = parameters[key];
 
                 xmlContent[DEFAULT_RC_LANGUAGE_VALUE] = xmlContent[DEFAULT_RC_LANGUAGE_VALUE] ? xmlContent[DEFAULT_RC_LANGUAGE_VALUE] : '';
