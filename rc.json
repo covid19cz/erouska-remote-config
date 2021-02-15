@@ -8,7 +8,7 @@
         "spreadPreventionUITitle": "Zásady zodpovědného chování",
         "symptomsUITitle": "Hlavní příznaky",
         "exposureUITitle": "Rizikové setkání",
-        "encounterWarning": "Setkali jste se s osobou, u které bylo prokázáno onemocnění COVID-19. Sledujte svůj zdravotní stav.",
+        "encounterWarning": "Setkali jste se s osobou, u které bylo potvrzeno onemocnění COVID-19. Sledujte svůj zdravotní stav.",
         "riskyEncountersWithoutSymptoms": "Jestliže se u vás neprojevují hlavní příznaky onemocnění COVID-19, nemusíte zůstávat doma. Dodržujte zásady zodpovědného chování a sledujte svůj zdravotní stav.",
         "riskyEncountersWithSymptoms": "Pokud se u vás v průběhu 14 dnů od kontaktu s nakaženým objevily příznaky respiračního onemocnění, kontaktujte telefonicky svého praktického lékaře a řiďte se jeho pokyny. V případě závažných zdravotních obtíží volejte 155.",
         "exposureHelpUITitle": "Nápověda",
@@ -21,7 +21,7 @@
             },
             {
                 "title": "Potřebujete poradit?",
-                "text": "Veškeré otázky a nejasnosti týkající se onemocnění COVID-19 najdete na webu MZČR.",
+                "text": "Odpovědi na veškeré otázky a nejasnosti týkající se onemocnění COVID-19 najdete na webu MZČR.",
                 "linkTitle": "Často kladené otázky",
                 "link": "https://koronavirus.mzcr.cz/"
             },
@@ -33,7 +33,7 @@
             },
             {
                 "title": "O aplikaci eRouška",
-                "text": "Zajímá vás, jak aplikace funguje? Podívejte se na web erouska.cz.",
+                "text": "Zajímá vás, jak aplikace funguje? Podívejte se na web erouska.cz",
                 "linkTitle": "Přejít na web erouska.cz",
                 "link": "https://erouska.cz"
             }
