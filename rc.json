@@ -2,7 +2,7 @@
     "rc": {
         "noEncounterBody": "Na rizikové setkání vás upozorníme pomocí oznámení.",
         "noEncounterHeader": "V posledních 14 dnech nebyla ve vaší blízkosti žádná osoba s potvrzeným onemocněním COVID-19",
-        "riskyEncountersTitleAn": "Dne %1$s jste se setkali s osobou, u které bylo potvrzeno onemocnění COVID-19. V případě, že vás bude kontaktovat pracovník hygienické stanice, postupujte podle jeho pokynů.",
+        "riskyEncountersTitleAn": "Dne %1$s jste se setkali s osobou, u které bylo potvrzeno onemocnění COVID-19.",
         "riskyEncountersTitle": "Dne %@ jste se setkali s osobou, u které bylo potvrzeno onemocnění COVID-19.",
         "recentExposuresUITitle": "Předchozí riziková setkání",
         "spreadPreventionUITitle": "Zásady zodpovědného chování",
