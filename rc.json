@@ -121,6 +121,6 @@
         "noEncounterCardTitle": "Za posledních 14 dní žádné rizikové setkání",
         "encounterUpdateFrequency": "Aktualizace probíhá jednou za %d hodin.",
         "howItWorksUITitle": "Jak eRouška funguje",
-        "howItWorksEvalContent": "eRoušky riziková setkání vyhodnotí v případě, že byly s nakaženým v kontaktu na vzdálenost bližší než 2 metry a po dobu alespoň 15 minut od okamžiku, kdy byl podle dostupných informací nakažlivým."
+        "howItWorksEvalContent": "eRoušky riziková setkání vyhodnotí v případě, že byly s nakaženým v kontaktu na vzdálenost bližší než 2 metry a po dobu alespoň 15 minut od okamžiku, kdy byl podle dostupných informací nakažlivým."
     }
 }
