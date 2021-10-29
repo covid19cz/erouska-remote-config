@@ -121,6 +121,9 @@
         "noEncounterCardTitle": "Za posledních 14 dní žádné rizikové setkání",
         "encounterUpdateFrequency": "Aktualizace probíhá jednou za %d hodin.",
         "howItWorksUITitle": "Jak eRouška funguje",
-        "howItWorksEvalContent": "eRoušky riziková setkání vyhodnotí v případě, že byly s nakaženým v kontaktu na vzdálenost bližší než 2 metry a po dobu alespoň 7 minut od okamžiku, kdy byl podle dostupných informací nakažlivým."
+        "howItWorksEvalContent": "eRoušky riziková setkání vyhodnotí v případě, že byly s nakaženým v kontaktu na vzdálenost bližší než 2 metry a po dobu alespoň 7 minut od okamžiku, kdy byl podle dostupných informací nakažlivým.",
+        "ragnarokHeadline" = "Pomoc eRoušky v boji s pandemií je u konce",
+        "ragnarokBody" = "Děkujeme, že jste se stali součástí sítě 1 707 436 lidí. Pomohli jste ochránit své okolí rozesláním…",
+        "ragnarokMoreInfo" = "https://erouska.cz",
     }
 }
